@@ -1,0 +1,26 @@
+{
+  "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
+  "name": "vdemeester-claude-code-plugins",
+  "version": "1.0.0",
+  "description": "Bundled plugins for Claude Code including Agent SDK development tools, PR review toolkit, and commit workflows",
+  "owner": {
+    "name": "Vincent Demeester",
+    "email": "vdemeester@users.github.com"
+  },
+  "plugins": [
+    {
+      "name": "git-commit",
+      "description": "Create well-formatted commit messages with file review and optional push",
+      "version": "1.0.0",
+      "source": "./plugins/git-commit",
+      "category": "development"
+    },
+    {
+      "name": "weekly-review",
+      "description": "Generate a weekly summary of your git commits with insights on tech debt, bug fixes, and new features",
+      "version": "1.0.0",
+      "source": "./plugins/weekly-review",
+      "category": "development"
+    }
+  ]
+}
