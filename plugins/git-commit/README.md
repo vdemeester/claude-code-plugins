@@ -24,6 +24,7 @@ This plugin enhances Claude Code's native git workflow by adding:
 
 ```bash
 /git-commit:commit
+/git-commit:commit-no-claude
 ```
 
 ## Workflow Phases
