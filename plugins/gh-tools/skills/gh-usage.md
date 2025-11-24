@@ -94,22 +94,315 @@ gh issue view 123 --json number,title,state,labels,assignees
 
 ### Creating and Managing Issues
 
-**Create an issue:**
+#### Basic Issue Creation
+
+**Simple issue creation:**
 ```bash
 gh issue create --title "Bug report" --body "Description"
-gh issue create --title "Feature" --label enhancement --assignee @me
+gh issue create --title "Feature request" --label enhancement --assignee @me
 ```
+
+**Interactive issue creation (recommended for detailed issues):**
+```bash
+gh issue create
+# Opens editor for title and body
+# Prompts for labels, assignees, milestone, projects
+```
+
+**Create with multiple options:**
+```bash
+gh issue create \
+  --title "Add user authentication" \
+  --body "Need to implement JWT-based auth for API security" \
+  --label "enhancement,security" \
+  --assignee @me \
+  --milestone "v2.0" \
+  --project "Backend Improvements"
+```
+
+#### Issue Creation Best Practices
+
+**1. Use Issue Templates**
+
+If your repository has issue templates, you can use them:
+
+```bash
+# Interactive selection from available templates
+gh issue create
+
+# Use specific template
+gh issue create --template bug_report.md
+gh issue create --template feature_request.md
+```
+
+**2. Create Issue from File**
+
+For complex issues with detailed descriptions:
+
+```bash
+# Create issue-body.md with your content
+gh issue create --title "Complex feature proposal" --body-file issue-body.md
+```
+
+Example `issue-body.md`:
+```markdown
+## Problem Statement
+Users cannot reset their passwords when logged out.
+
+## Proposed Solution
+Add a "Forgot Password" flow with email verification.
+
+## Implementation Details
+- Add password reset endpoint
+- Integrate with email service
+- Create reset token with 1-hour expiry
+
+## Acceptance Criteria
+- [ ] User receives reset email within 1 minute
+- [ ] Token expires after 1 hour
+- [ ] User can set new password successfully
+```
+
+**3. Well-Structured Bug Reports**
+
+```bash
+gh issue create --title "Login fails with valid credentials" --body "$(cat <<'EOF'
+## Bug Description
+Users cannot log in even with correct username/password.
+
+## Steps to Reproduce
+1. Navigate to /login
+2. Enter valid credentials
+3. Click "Sign In"
+4. Error: "Invalid credentials"
+
+## Expected Behavior
+User should be logged in and redirected to dashboard.
+
+## Actual Behavior
+Login fails with error message despite correct credentials.
+
+## Environment
+- Browser: Chrome 120
+- OS: macOS 14.1
+- App version: 2.3.4
+
+## Additional Context
+Error appears in console: "TypeError: Cannot read property 'token' of undefined"
+
+## Logs
+```
+[2024-01-15 10:23:45] POST /api/login 500 Internal Server Error
+```
+EOF
+)" --label bug --assignee @me
+```
+
+**4. Feature Requests with Context**
+
+```bash
+gh issue create --title "Add dark mode support" --body "$(cat <<'EOF'
+## Feature Description
+Add dark mode theme option to improve user experience in low-light environments.
+
+## User Story
+As a user who works at night, I want a dark mode option so that I can reduce eye strain.
+
+## Proposed Implementation
+- Add theme toggle in settings
+- Store preference in localStorage
+- Apply dark theme CSS variables
+- Support system preference detection
+
+## Benefits
+- Reduced eye strain for users
+- Better battery life on OLED screens
+- Modern UX expectation
+
+## Alternatives Considered
+- Browser extension (rejected: not all users can install extensions)
+- System theme only (rejected: users want manual control)
+
+## References
+- [Material Design Dark Theme](https://material.io/design/color/dark-theme.html)
+- Similar feature in competitor apps
+EOF
+)" --label enhancement,ux --milestone "Q1 2024"
+```
+
+**5. Task/Chore Issues**
+
+```bash
+gh issue create --title "Update dependencies to latest versions" --body "$(cat <<'EOF'
+## Task
+Update all npm dependencies to resolve security vulnerabilities.
+
+## Checklist
+- [ ] Update React to v18.2.0
+- [ ] Update Express to v4.18.2
+- [ ] Update testing libraries
+- [ ] Run full test suite
+- [ ] Update documentation
+
+## Dependencies to Update
+- react: 17.0.2 → 18.2.0
+- express: 4.17.1 → 4.18.2
+- jest: 28.0.0 → 29.3.1
+
+## Security Notes
+2 high-severity vulnerabilities will be resolved.
+EOF
+)" --label chore,security
+```
+
+#### Issue Creation Patterns
+
+**Pattern 1: Create Issue from Error Log**
+
+```bash
+# Capture error and create issue
+ERROR_LOG=$(grep "ERROR" app.log | tail -20)
+gh issue create \
+  --title "Application errors in production" \
+  --body "$(cat <<EOF
+## Error Summary
+Multiple errors detected in production logs.
+
+## Error Logs
+\`\`\`
+$ERROR_LOG
+\`\`\`
+
+## Investigation Needed
+- Identify root cause
+- Implement fix
+- Add monitoring
+EOF
+)" --label bug,production
+```
+
+**Pattern 2: Create Issue from Failed Workflow**
+
+```bash
+# After identifying failed workflow
+gh issue create \
+  --title "CI/CD pipeline failing on main branch" \
+  --body "Workflow run https://github.com/owner/repo/actions/runs/123456 failed. \
+Investigate test failures in auth module." \
+  --label ci,bug \
+  --assignee @me
+```
+
+**Pattern 3: Bulk Issue Creation from CSV/List**
+
+```bash
+# For creating multiple related issues
+while IFS=',' read -r title body label; do
+  gh issue create --title "$title" --body "$body" --label "$label"
+done < issues.csv
+```
+
+**Pattern 4: Create Issue and Link to PR**
+
+```bash
+# Create issue, then reference in PR
+ISSUE_NUM=$(gh issue create --title "Refactor auth module" --body "See PR for details" --label refactor --json number --jq .number)
+echo "Created issue #$ISSUE_NUM"
+
+# Later when creating PR
+gh pr create --title "Refactor auth module" --body "Fixes #$ISSUE_NUM"
+```
+
+#### Managing Issues
 
 **Close an issue:**
 ```bash
 gh issue close 123
 gh issue close 123 --comment "Fixed in PR #456"
+gh issue close 123 --reason "completed"  # or "not planned"
 ```
 
 **Reopen an issue:**
 ```bash
 gh issue reopen 123
+gh issue reopen 123 --comment "Issue persists, reopening for investigation"
 ```
+
+**Edit an issue:**
+```bash
+gh issue edit 123 --title "Updated title"
+gh issue edit 123 --body "Updated description"
+gh issue edit 123 --add-label "help wanted"
+gh issue edit 123 --remove-label "wontfix"
+gh issue edit 123 --add-assignee user1,user2
+gh issue edit 123 --remove-assignee user3
+gh issue edit 123 --milestone "v2.0"
+```
+
+**Pin an issue:**
+```bash
+gh issue pin 123
+gh issue unpin 123
+```
+
+**Lock/Unlock an issue:**
+```bash
+gh issue lock 123 --reason "spam"  # reasons: spam, off-topic, too heated, resolved
+gh issue unlock 123
+```
+
+**Transfer issue to another repo:**
+```bash
+gh issue transfer 123 --repo owner/other-repo
+```
+
+**Add comment to issue:**
+```bash
+gh issue comment 123 --body "Update: bug confirmed, working on fix"
+gh issue comment 123 --body-file update.md
+```
+
+#### Issue Templates
+
+**Using Repository Issue Templates**
+
+Many repositories have `.github/ISSUE_TEMPLATE/` with predefined templates:
+
+```bash
+# List available templates
+ls .github/ISSUE_TEMPLATE/
+
+# Create issue with specific template
+gh issue create --template bug_report.yml
+gh issue create --template feature_request.yml
+gh issue create --template custom_template.md
+```
+
+**Common Template Types:**
+- `bug_report.md` - For bug reports
+- `feature_request.md` - For feature requests
+- `question.md` - For questions
+- `custom.md` - For other types
+
+#### Issue Creation Tips
+
+**DO:**
+- ✅ Write clear, descriptive titles
+- ✅ Include reproduction steps for bugs
+- ✅ Add relevant labels and assignees
+- ✅ Link to related issues or PRs
+- ✅ Use code blocks for logs/errors
+- ✅ Include environment details for bugs
+- ✅ Add acceptance criteria for features
+- ✅ Use checklists for tasks
+
+**DON'T:**
+- ❌ Create duplicate issues (search first)
+- ❌ Use vague titles like "It doesn't work"
+- ❌ Omit reproduction steps
+- ❌ Mix multiple unrelated issues
+- ❌ Skip labeling (makes triaging harder)
+- ❌ Forget to assign if you know who should handle it
 
 ---
 
