@@ -1,0 +1,9 @@
+{
+  "name": "gh-tools",
+  "version": "1.0.0",
+  "description": "GitHub CLI (gh) utilities and skills for working with issues, PRs, workflows, labels, and projects",
+  "author": {
+    "name": "Vincent Demeester",
+    "email": "vdemeester@users.github.com"
+  }
+}

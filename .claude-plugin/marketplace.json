@@ -21,6 +21,13 @@
       "version": "1.0.0",
       "source": "./plugins/weekly-review",
       "category": "development"
+    },
+    {
+      "name": "gh-tools",
+      "description": "GitHub CLI (gh) utilities and skills for working with issues, PRs, workflows, labels, and projects",
+      "version": "1.0.0",
+      "source": "./plugins/gh-tools",
+      "category": "development"
     }
   ]
 }

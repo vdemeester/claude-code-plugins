@@ -55,6 +55,38 @@ The plugin generates a structured report with:
 - Uses PR labels and descriptions for better categorization
 - Read-only operation - never modifies your code or git history
 
+### GitHub CLI Tools
+
+Comprehensive skills and utilities for working with GitHub CLI (`gh`) to manage issues, pull requests, workflows, labels, and projects.
+
+**What it covers**:
+
+- Issues: listing, filtering by assignee/author/label, creating and managing
+- Pull Requests: filtering, status checks, reviewing, merging
+- Workflows: monitoring runs, checking status, viewing logs, debugging failures
+- Workflows attached to PRs: specialized patterns for PR-specific workflow information
+- Labels: creating, managing, and applying to issues/PRs
+- Projects: working with GitHub Projects V2
+
+**Usage**:
+
+The `gh-usage` skill is automatically invoked when you ask questions about GitHub CLI operations:
+
+```
+"List all open PRs with the bug label"
+"Show me failed workflow runs for the current branch"
+"How do I check workflow status for PR #123?"
+"Get all issues assigned to me"
+```
+
+**Features**:
+
+- Common patterns for real-world workflows (finding failed runs, PRs ready to merge)
+- Advanced usage with `--json` and `--jq` for scripting
+- Examples of using GitHub GraphQL API via `gh api`
+- Best practices and troubleshooting tips
+- Comprehensive reference for all major `gh` commands
+
 
 ## Installation
 
@@ -69,6 +101,7 @@ To install specific plugins:
 ```
 claude plugin install git-commit
 claude plugin install weekly-review
+claude plugin install gh-tools
 ```
 
 ## Plugin Structure
@@ -76,8 +109,9 @@ claude plugin install weekly-review
 Each plugin is located in the `plugins/` directory and includes:
 
 - `.claude-plugin/plugin.json` - Plugin metadata
-- `commands/` - Slash commands for user interaction
-- `agents/` - Specialized agents for specific tasks
+- `commands/` - Slash commands for user interaction (optional)
+- `agents/` - Specialized agents for specific tasks (optional)
+- `skills/` - Reusable knowledge and expertise (optional)
 
 ## Plugin Development
 
